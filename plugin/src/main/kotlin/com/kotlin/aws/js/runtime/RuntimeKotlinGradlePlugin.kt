@@ -4,10 +4,12 @@ import com.kotlin.aws.js.runtime.tasks.BuildLambda
 import com.kotlin.aws.js.runtime.tasks.GenerateMain
 import com.kotlin.aws.js.runtime.tasks.GenerateWebpackConfig
 import com.kotlin.aws.js.runtime.utils.getTask
+import com.kotlin.aws.js.runtime.utils.runtime
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetContainer
+import java.io.File
 
 class RuntimeKotlinGradlePlugin: Plugin<Project> {
     override fun apply(target: Project) {
@@ -17,6 +19,16 @@ class RuntimeKotlinGradlePlugin: Plugin<Project> {
         val buildLambda = target.tasks.create("buildLambda", BuildLambda::class.java)
         buildLambda.dependsOn("assemble")
 
+        // set browser as a target
+        val kotlinJsProjectExtension = target.extensions.getByName("kotlin") as KotlinJsProjectExtension
+        kotlinJsProjectExtension.js {
+            browser {
+                testTask {
+                    enabled = false
+                }
+            }
+            binaries.executable()
+        }
 
         target.afterEvaluate {
             // set task dependency
@@ -31,15 +43,14 @@ class RuntimeKotlinGradlePlugin: Plugin<Project> {
                 this.setSrcDirs(this.srcDirs.plus(it.buildDir.absolutePath + "/kotlin-gen"))
             }
 
-            // set browser as a target
-            val kotlinJsProjectExtension = target.extensions.getByName("kotlin") as KotlinJsProjectExtension
-            kotlinJsProjectExtension.js {
-                browser {
-                    testTask {
-                        enabled = false
+            if (target.runtime.outputDir != null) {
+                kotlinJsProjectExtension.js {
+                    browser {
+                        distribution {
+                            directory = File(target.runtime.outputDir!!)
+                        }
                     }
                 }
-                binaries.executable()
             }
         }
 

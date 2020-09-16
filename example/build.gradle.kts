@@ -4,14 +4,12 @@ plugins {
     id("com.kotlin.aws.js.js-plugin") version "0.0.1" apply true
 }
 
-
 group = "org.example"
 version = "1.0-SNAPSHOT"
 
 repositories {
     mavenLocal()
     jcenter()
-    mavenCentral()
 }
 
 dependencies {
@@ -20,12 +18,7 @@ dependencies {
     implementation("com.kotlin.aws.js.runtime:kotlin-js-aws-runtime:0.0.1")
 }
 
-kotlin {
-    js {
-        nodejs()
-    }
-}
-
 runtime {
     handler = "com.js.sample.Handler::handler"
+    outputDir = project.buildDir.absolutePath + "/my_lambda"
 }

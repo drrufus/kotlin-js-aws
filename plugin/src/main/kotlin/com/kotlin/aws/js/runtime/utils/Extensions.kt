@@ -5,7 +5,7 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 
 internal val Project.runtime
-    get() = this.extensions.create("runtime", RuntimePluginExtension::class.java)
+    get() = this.extensions.findByName("runtime") as RuntimePluginExtension? ?: this.extensions.create("runtime", RuntimePluginExtension::class.java)
 
 internal fun Project.getTask(name: String): Task {
     val task = this.tasks.findByName(name)
