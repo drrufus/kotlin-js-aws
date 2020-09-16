@@ -1,5 +1,6 @@
 package com.kotlin.aws.js.runtime.tasks
 
+import com.kotlin.aws.js.runtime.dsl.RuntimePluginExtension
 import com.kotlin.aws.js.runtime.utils.runtime
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
@@ -13,9 +14,9 @@ open class GenerateMain : DefaultTask() {
     }
 
     @get:Input
-    val extension = project.runtime
+    val extension: RuntimePluginExtension = project.runtime
 
-    val defaultPath: File by lazy {
+    private val defaultPath: File by lazy {
         val default = File(project.buildDir, "kotlin-gen")
         default.mkdirs()
         default

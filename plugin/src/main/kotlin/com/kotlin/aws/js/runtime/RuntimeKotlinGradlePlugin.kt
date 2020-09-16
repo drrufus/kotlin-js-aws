@@ -11,13 +11,15 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetContainer
 import java.io.File
 
+@Suppress("unused")
 class RuntimeKotlinGradlePlugin: Plugin<Project> {
     override fun apply(target: Project) {
 
-        val generateMain = target.tasks.create("generateMain", GenerateMain::class.java)
-        val generateJsConf = target.tasks.create("generateWebpackConfig", GenerateWebpackConfig::class.java)
-        val buildLambda = target.tasks.create("buildLambda", BuildLambda::class.java)
-        buildLambda.dependsOn("assemble")
+        target.tasks.create("generateMain", GenerateMain::class.java)
+        target.tasks.create("generateWebpackConfig", GenerateWebpackConfig::class.java)
+        target.tasks.create("buildLambda", BuildLambda::class.java).apply {
+            dependsOn("assemble")
+        }
 
         // set browser as a target
         val kotlinJsProjectExtension = target.extensions.getByName("kotlin") as KotlinJsProjectExtension
@@ -43,6 +45,7 @@ class RuntimeKotlinGradlePlugin: Plugin<Project> {
                 this.setSrcDirs(this.srcDirs.plus(it.buildDir.absolutePath + "/kotlin-gen"))
             }
 
+            // update distribution dir
             if (target.runtime.outputDir != null) {
                 kotlinJsProjectExtension.js {
                     browser {
